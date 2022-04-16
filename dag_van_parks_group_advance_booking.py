@@ -41,22 +41,22 @@ def get_accounts():
                     username = 'connorjjung@gmail.com',
                     password = 'hockey1995',
                     early_time = '8:30',
-                    late_time = '1:15',
+                    late_time = '9:45',
                     fallback = False,
                     booking_fee = True,
                     group_id=1
                 ),
-                dict(
-                    course = 'mccleery',
-                    group_size = 4,
-                    username = 'conjungle95@gmail.com',
-                    password = 'hockey1995',
-                    early_time = '8:30', # 9 minutes between tee times
-                    late_time = '1:15',
-                    fallback = False,
-                    booking_fee = True,
-                    group_id=2
-                )
+                # dict(
+                #     course = 'mccleery',
+                #     group_size = 4,
+                #     username = 'conjungle95@gmail.com',
+                #     password = 'hockey1995',
+                #     early_time = '8:30', # 9 minutes between tee times
+                #     late_time = '9:45',
+                #     fallback = False,
+                #     booking_fee = True,
+                #     group_id=2
+                # )
             ]
 
 def book_group(number, account):
@@ -100,6 +100,10 @@ with DAG(
                     bash_command='date',
                     dag=dag)
 
+    bookings = [ book_group(i, account_info) for i, account_info in enumerate(get_accounts()) ]
+    ### declare DAG order / using list comprehension to run these in parallel
+    job_start >> bookings >> all_done
+
     ### Loop over accounts to produce parralel runs
-    for i, account_info in enumerate(get_accounts()):
-        job_start >> book_group(i, account_info) >> all_done
+    # for i, account_info in enumerate(get_accounts()):
+    #     job_start >> book_group(i, account_info) >> all_done
